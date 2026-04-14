@@ -1,0 +1,62 @@
+---
+tags: [ctx/knowledge, ctx/latest]
+date: "2026-04-14"
+topic: "Initial .ctx setup — full module docs + LM Studio external lib reference"
+---
+
+# Knowledge Distillate — OpenClaw LATEST
+#
+# Agents: read this at session start before any task.
+# Humans: pin this as your Obsidian vault home note.
+#
+# To create a new distillate after a session:
+#   python scripts/new_knowledge.py "topic"
+
+milestone: >
+  Complete .ctx coverage for openclaw: 15 modules + 9 architecture docs fully
+  documented with Cross-References wikilinks. LM Studio added as bidirectional
+  external lib reference (modules/lmstudio.ctx ↔ lmstudio/). Obsidian vault
+  config ships with the repo (examples/openclaw/.obsidian/).
+
+blockers_resolved:
+  - "Obsidian Graph View showed disconnected nodes — fixed by adding .ctx extension
+    to all wikilinks (agents.ctx.md → [[modules/agents.ctx|agents]], not [[modules/agents]])"
+
+cross_session_patterns:
+  - "Wikilink format for .ctx.md files: always include .ctx in the link path.
+    File agents.ctx.md → [[modules/agents.ctx|agents]]. Obsidian strips only the
+    final .md — agents.ctx is the Obsidian-internal name."
+  - "lmstudio/ is a READ-ONLY external lib reference — not distilled, not modified.
+    Agents reading lmstudio docs should start at lmstudio/INDEX.md."
+  - "architecture/INDEX.md is the navigation hub for all 9 architecture docs.
+    Agents doing cross-module work should read this before picking a specific doc."
+  - ".distilled/ files are agent-read-only. Never edit them directly — run
+    build_distilled.py after any modules/ or architecture/ change."
+
+next_session_hints:
+  - "Priority 1: Run build_distilled.py to regenerate .distilled/ if any module docs changed"
+  - "Priority 2: Update CROSS_INDEX.json when adding new modules or changing dependencies"
+  - "Priority 3: Add knowledge distillate after each significant session (python scripts/new_knowledge.py)"
+
+open_items:
+  - item: "Canvas file (architecture.canvas) not yet created"
+    why_deferred: "Graph View wikilinks now cover the same information for agents.
+      Canvas is human-only and can be built incrementally."
+    trigger: "When preparing the vault for a live demo or team onboarding"
+
+units_completed:
+  - "15 module .ctx.md files — all with Cross-References wikilinks"
+  - "9 architecture .ctx.md files — all with Affected Modules wikilinks"
+  - "lmstudio/ external lib reference — 6 files (overview, typescript, python, rest-api, openai-compat, cli)"
+  - "Obsidian vault config — graph.json (color groups), workspace.json (INDEX.md on start)"
+  - ".distilled/ — haiku: 18.9k tokens · sonnet: 33.4k · opus: 38.8k"
+
+metrics:
+  modules_documented: 16
+  architecture_docs: 9
+  external_lib_files: 6
+  distilled_haiku_tokens: 18937
+  distilled_sonnet_tokens: 32770
+  distilled_opus_tokens: 38936
+  wikilinks_total: 367
+  broken_links: 0

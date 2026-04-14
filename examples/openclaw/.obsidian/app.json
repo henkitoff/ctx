@@ -1,0 +1,15 @@
+{
+  "defaultViewMode": "preview",
+  "foldHeading": false,
+  "foldIndent": true,
+  "readableLineLength": true,
+  "strictLineBreaks": false,
+  "showFrontmatter": true,
+  "promptDelete": true,
+  "trashOption": "system",
+  "attachmentFolderPath": "./",
+  "newFileLocation": "current",
+  "newLinkFormat": "shortest",
+  "useMarkdownLinks": false,
+  "alwaysUpdateLinks": true
+}

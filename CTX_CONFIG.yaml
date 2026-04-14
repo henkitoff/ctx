@@ -1,0 +1,36 @@
+# .ctx Build Configuration — Single source of truth for ctx_scan.py
+# Copy this file to .ctx/CTX_CONFIG.yaml and adapt to your project.
+
+# Source directory (relative to project root)
+# ctx_scan.py will scan this directory for Python files.
+source_dir: src
+
+# Internal packages — only these imports are tracked as dependencies.
+# List the names of your top-level packages (directories under source_dir/).
+internal_packages:
+  - auth
+  - api
+  - core
+  - db
+  - services
+  - utils
+  - workers
+
+# Service metadata — packages that expose HTTP/WS services.
+# Used to enrich CROSS_INDEX.json entries with runtime metadata.
+services:
+  api:
+    port: 8000
+    type: fastapi
+    health_endpoint: /health
+    description: REST API
+  workers:
+    port: 0
+    type: celery
+    health_endpoint: ""
+    description: Background task workers
+
+# Truncation limits — guards against overly large distillates
+limits:
+  max_classes_per_package: 30
+  max_functions_per_module: 20

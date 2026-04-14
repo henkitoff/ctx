@@ -1,0 +1,74 @@
+{
+  "_comment": "LM Studio external lib reference. Source: https://github.com/lmstudio-ai",
+  "_type": "lib_ref",
+  "modules": {
+    "overview": {
+      "depends_on": [],
+      "depended_by": ["typescript", "python", "rest-api", "openai-compat", "cli"],
+      "provides": ["LMStudioClient", "lms.llm", "auth-token", "TTL", "headless", "llmster"],
+      "entry_point": "lmstudio/overview.ctx.md"
+    },
+    "typescript": {
+      "depends_on": ["overview", "rest-api"],
+      "depended_by": [],
+      "provides": ["LMStudioClient", "llm.model", "respond", "complete", "act", "embed", "load", "unload"],
+      "entry_point": "lmstudio/typescript.ctx.md",
+      "npm": "@lmstudio/sdk",
+      "source": "https://github.com/lmstudio-ai/lmstudio-js"
+    },
+    "python": {
+      "depends_on": ["overview", "rest-api"],
+      "depended_by": [],
+      "provides": ["lms.llm", "Chat", "respond", "complete", "act", "embed", "Client", "AsyncClient"],
+      "entry_point": "lmstudio/python.ctx.md",
+      "pip": "lmstudio",
+      "source": "https://github.com/lmstudio-ai/lmstudio-python"
+    },
+    "rest-api": {
+      "depends_on": ["overview"],
+      "depended_by": ["typescript", "python", "openai-compat"],
+      "provides": ["/api/v1/chat", "/api/v1/load", "/api/v1/unload", "/api/v1/models", "/api/v1/tokenize", "/api/v1/download"],
+      "entry_point": "lmstudio/rest-api.ctx.md",
+      "base_url": "http://localhost:1234/api/v1/"
+    },
+    "openai-compat": {
+      "depends_on": ["overview", "rest-api"],
+      "depended_by": [],
+      "provides": ["/v1/chat/completions", "/v1/completions", "/v1/embeddings", "/v1/responses", "/v1/messages"],
+      "entry_point": "lmstudio/openai-compat.ctx.md",
+      "base_url": "http://localhost:1234/v1/",
+      "note": "Drop-in for OpenAI and Anthropic clients. Missing: stateful chat, model mgmt, MCP."
+    },
+    "cli": {
+      "depends_on": ["overview", "rest-api"],
+      "depended_by": [],
+      "provides": ["lms-load", "lms-ls", "lms-get", "lms-serve", "lms-daemon"],
+      "entry_point": "lmstudio/cli.ctx.md",
+      "source": "https://github.com/lmstudio-ai/lms"
+    }
+  },
+  "services": {
+    "lmstudio_server": {
+      "default_url": "http://localhost:1234",
+      "type": "http-rest",
+      "note": "Must be running (desktop app or llmster daemon). Models must be loaded before inference."
+    }
+  },
+  "openclaw_integration": {
+    "module": "modules/lmstudio.ctx.md",
+    "used_endpoints": [
+      "GET /api/v1/models (health check)",
+      "POST /v1/chat/completions (inference)",
+      "POST /v1/embeddings (embeddings)"
+    ],
+    "model_ref_scheme": "lmstudio:<model-id>",
+    "note": "Provider plugin in extensions/lmstudio/ — imports only openclaw/plugin-sdk/*"
+  },
+  "invariants": [
+    "LM Studio server must be running before any API call",
+    "Models must be loaded (explicitly or JIT) before inference",
+    "OpenAI-compat /v1/ does NOT expose model management or MCP — use /api/v1/ for those",
+    "Auth token required only when 'Require Authentication' is enabled in Server Settings",
+    "llmster is the headless deployment path for Linux servers"
+  ]
+}

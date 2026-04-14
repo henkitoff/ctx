@@ -1,0 +1,53 @@
+# Knowledge Distillate — SESSION TEMPLATE
+#
+# Copy this file, fill it in, save as knowledge/archive/YYYY-MM-DD_topic.yaml,
+# then update LATEST.yaml to match.
+#
+# Or use the script: python scripts/new_knowledge.py "Topic description"
+#
+# WHAT TO CAPTURE:
+# - Only what is NOT obvious from reading the code or git log
+# - Decisions made and WHY (context that will be lost otherwise)
+# - Non-obvious learnings that will help the next agent avoid mistakes
+# - Deferred items with explicit reasons — not a TODO list
+#
+# WHAT TO SKIP:
+# - What files were changed (use git log)
+# - How a function works (read the code)
+# - Anything derivable from the current state of the codebase
+
+date: "YYYY-MM-DD"
+topic: "One-line description of what this session accomplished"
+
+milestone: "One sentence: what is now true that was not true before this session"
+
+blockers_resolved:
+  - "Describe a blocker that was cleared, and HOW it was resolved"
+  # Add more as needed
+
+cross_session_patterns:
+  - "Non-obvious thing learned that future agents must know"
+  - "e.g. Module X must be initialized before Y, even though Y doesn't import X"
+  # These are the highest-value entries — spend time here
+
+next_session_hints:
+  - "Priority 1: most important thing to do next, and why"
+  - "Priority 2: second most important"
+  # Ordered by priority, not by difficulty
+
+open_items:
+  - item: "Short description of deferred work"
+    why_deferred: "Explicit reason — avoid 'not done yet'"
+    trigger: "What would cause this to become urgent"
+  # Use this for CONSCIOUS deferrals only, not incomplete work
+
+units_completed:
+  - "Module X refactored — N lines, N tests"
+  - "API endpoint Y added with auth"
+  # Brief, factual
+
+metrics:
+  tests_total: 0
+  tests_passed: 0
+  coverage_pct: null
+  # Add any project-specific metrics

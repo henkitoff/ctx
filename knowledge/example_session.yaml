@@ -1,0 +1,35 @@
+# Session Handoff — Knowledge Distillate
+#
+# HOW TO USE:
+# After each significant session, copy this template, fill it in,
+# and save as knowledge/session_YYYY-MM-DD.yaml
+# Keep a symlink or copy named knowledge/LATEST.yaml pointing to the newest.
+# Agents read LATEST.yaml at session start.
+
+date: "YYYY-MM-DD"
+topic: "Short description of what this session accomplished"
+
+milestone: "One sentence: what is now true that wasn't before"
+
+blockers_resolved:
+  - "Describe any blockers that were cleared"
+
+cross_session_patterns:
+  - "Non-obvious things learned that future agents should know"
+  - "e.g. Redis must be lazily initialized, not at import time"
+
+next_session_hints:
+  - "Priority 1: what to do next"
+  - "Priority 2: second most important thing"
+
+open_items:
+  - "Deliberately deferred: describe what and why"
+
+units_completed:
+  - "Module X refactored (N lines)"
+  - "N new tests added"
+
+metrics:
+  tests_total: 0
+  tests_passed: 0
+  coverage_pct: 0

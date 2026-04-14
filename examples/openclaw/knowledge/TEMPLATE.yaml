@@ -1,0 +1,39 @@
+---
+tags: [ctx/knowledge]
+date: "YYYY-MM-DD"
+topic: "One-line description of what this session accomplished"
+---
+
+# Knowledge Distillate — TEMPLATE
+#
+# Copy this file and fill it in after each significant session.
+# Run: python scripts/new_knowledge.py "topic"
+# (auto-fills date + topic, archives previous LATEST.yaml)
+
+milestone: "One sentence: what is now true that was not true before"
+
+blockers_resolved:
+  - "Describe a blocker that was cleared, and HOW it was resolved"
+
+cross_session_patterns:
+  - "Non-obvious thing future agents must know — the highest-value section"
+  - "e.g. 'wikilinks to .ctx.md files need .ctx in path: [[modules/X.ctx|X]]'"
+
+next_session_hints:
+  - "Priority 1: most important next action, and why"
+  - "Priority 2: second most important"
+
+open_items:
+  - item: "Short description of deferred work"
+    why_deferred: "Explicit reason — avoid 'not done yet'"
+    trigger: "What would cause this to become urgent"
+
+units_completed:
+  - "Brief, factual — what changed and in what scope"
+
+metrics:
+  tests_total: 0
+  tests_passed: 0
+  # Add project-specific metrics
+
+# Navigation: [[INDEX]] · [[modules/agents.ctx|agents]]

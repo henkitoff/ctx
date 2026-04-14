@@ -1,0 +1,14 @@
+# Agent runtime memory — volatile, never commit
+agents/
+
+# Obsidian session state — volatile, differs per user
+/.obsidian/workspace.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+.venv/

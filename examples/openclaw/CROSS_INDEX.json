@@ -1,0 +1,212 @@
+{
+  "_comment": "Dependency graph for openclaw/openclaw. Source: https://github.com/openclaw/openclaw",
+  "modules": {
+    "agents": {
+      "depends_on": ["plugins", "config", "acp", "channels", "gateway", "sessions"],
+      "depended_by": ["commands", "gateway"],
+      "provides": ["agentCommand", "AgentHarness", "resolveDefaultModelForAgent", "buildWorkspaceSkillSnapshot"],
+      "entry_point": "modules/agents.ctx.md"
+    },
+    "gateway": {
+      "depends_on": ["config", "plugins", "channels", "agents", "sessions", "infra", "security"],
+      "depended_by": ["cli", "commands"],
+      "provides": ["GatewayServer", "attachGatewayWsConnectionHandler", "ChatSendParams", "ChatEvent", "AgentEvent"],
+      "entry_point": "modules/gateway.ctx.md"
+    },
+    "plugins": {
+      "depends_on": ["config", "infra"],
+      "depended_by": ["agents", "channels", "gateway", "hooks", "commands"],
+      "provides": ["PluginRegistry", "PluginManifest", "ChannelPlugin", "ProviderPlugin", "resolvePluginAuth"],
+      "entry_point": "modules/plugins.ctx.md"
+    },
+    "channels": {
+      "depends_on": ["plugins", "config", "security"],
+      "depended_by": ["agents", "gateway", "auto-reply"],
+      "provides": ["ChannelPlugin", "ChannelOutboundAdapter", "ChannelId", "resolveChannelApprovalAdapter"],
+      "entry_point": "modules/channels.ctx.md"
+    },
+    "config": {
+      "depends_on": ["secrets", "infra"],
+      "depended_by": ["agents", "gateway", "plugins", "channels", "cli"],
+      "provides": ["loadConfig", "writeConfigFile", "mutateConfigFile", "OpenClawConfig"],
+      "entry_point": "modules/config.ctx.md"
+    },
+    "acp": {
+      "depends_on": ["gateway", "config"],
+      "depended_by": ["agents"],
+      "provides": ["AcpServer", "AcpSession", "AcpServerOptions"],
+      "entry_point": "modules/acp.ctx.md"
+    },
+    "auto-reply": {
+      "depends_on": ["channels", "config", "plugins"],
+      "depended_by": ["gateway"],
+      "provides": ["getReplyFromConfig", "ReplyPayload"],
+      "entry_point": "modules/auto-reply.ctx.md"
+    },
+    "cli": {
+      "depends_on": ["config", "infra"],
+      "depended_by": [],
+      "provides": ["runCli", "createDefaultDeps", "buildProgramFromDescriptors"],
+      "entry_point": "modules/cli.ctx.md"
+    },
+    "sessions": {
+      "depends_on": ["config"],
+      "depended_by": ["agents", "gateway", "channels"],
+      "provides": ["deriveSessionChatType", "SessionKey", "SessionKeyChatType"],
+      "entry_point": "modules/sessions.ctx.md"
+    },
+    "secrets": {
+      "depends_on": ["infra"],
+      "depended_by": ["config"],
+      "provides": ["resolveSecretValue", "isSecretRef", "SecretRef", "auditSecretsUsage"],
+      "entry_point": "modules/secrets.ctx.md"
+    },
+    "infra": {
+      "depends_on": [],
+      "depended_by": ["agents", "gateway", "config", "secrets", "plugins", "channels", "cli"],
+      "provides": ["ensurePortAvailable", "ensureBinary", "installGaxiosFetchCompat", "PortInUseError"],
+      "entry_point": "modules/infra.ctx.md"
+    },
+    "hooks": {
+      "depends_on": ["plugins", "config"],
+      "depended_by": ["gateway", "auto-reply"],
+      "provides": ["HookEntry", "dispatchHook", "bundledHooks"],
+      "entry_point": "modules/hooks.ctx.md"
+    },
+    "lmstudio": {
+      "depends_on": ["plugins", "config", "infra", "secrets"],
+      "depended_by": ["agents"],
+      "provides": ["LmStudioProvider", "LmStudioConfig", "checkLmStudioHealth", "LmStudioModelRef"],
+      "entry_point": "modules/lmstudio.ctx.md",
+      "note": "Provider plugin extension — lives in extensions/lmstudio/, imports only openclaw/plugin-sdk/*"
+    },
+    "memory": {
+      "depends_on": ["config", "infra"],
+      "depended_by": ["agents", "gateway"],
+      "provides": ["MemoryIndex", "memorySearch", "memoryGet", "wikiSearch", "ObsidianBridge"],
+      "entry_point": "modules/memory.ctx.md"
+    },
+    "nodes": {
+      "depends_on": ["gateway", "config", "infra"],
+      "depended_by": ["agents", "gateway", "channels"],
+      "provides": ["NodeHost", "NodeCapabilities", "NodeStatus", "approveNode", "invokeNode"],
+      "entry_point": "modules/nodes.ctx.md"
+    },
+    "tasks": {
+      "depends_on": ["agents", "config", "gateway"],
+      "depended_by": ["gateway", "hooks"],
+      "provides": ["TaskRunner", "CronScheduler", "dispatchTask", "FlowEngine"],
+      "entry_point": "modules/tasks.ctx.md"
+    }
+  },
+  "architecture": {
+    "DOCS_MAP": {
+      "purpose": "Complete documentation navigation map — all ~100 doc pages mapped to URLs and .ctx files",
+      "entry_point": "architecture/DOCS_MAP.ctx.md"
+    },
+    "AGENT_RUNTIME": {
+      "purpose": "Agent runtime internals — workspace, bootstrap files, agent loop, skills, compaction, hooks, queue modes",
+      "affects": ["agents", "sessions", "tasks", "hooks", "memory", "plugins"],
+      "entry_point": "architecture/AGENT_RUNTIME.ctx.md"
+    },
+    "MULTI_AGENT": {
+      "purpose": "Multi-agent routing, bindings, agent isolation, sub-agents, per-agent sandbox and tool policy",
+      "affects": ["agents", "sessions", "channels", "tasks", "plugins"],
+      "entry_point": "architecture/MULTI_AGENT.ctx.md"
+    },
+    "LOCAL_INFERENCE": {
+      "purpose": "Pattern for local vs cloud provider routing — health checks, model ref schemes, graceful degradation",
+      "affects": ["lmstudio", "agents", "plugins"],
+      "entry_point": "architecture/LOCAL_INFERENCE.ctx.md"
+    },
+    "MESSAGE_FLOW": {
+      "purpose": "End-to-end message flow from inbound channel to agent reply",
+      "affects": ["gateway", "channels", "agents", "auto-reply"],
+      "entry_point": "architecture/MESSAGE_FLOW.ctx.md"
+    },
+    "AGENT_PIPELINE": {
+      "purpose": "Single-agent turn pipeline detail",
+      "affects": ["agents", "sessions"],
+      "entry_point": "architecture/AGENT_PIPELINE.ctx.md"
+    },
+    "PLUGIN_SYSTEM": {
+      "purpose": "Plugin system — manifests, registry, hooks, bundling, SDK boundary",
+      "affects": ["plugins", "agents", "channels", "gateway"],
+      "entry_point": "architecture/PLUGIN_SYSTEM.ctx.md"
+    },
+    "GATEWAY_PROTOCOL": {
+      "purpose": "Gateway WebSocket control plane — RPC protocol, auth, pairing, versioning",
+      "affects": ["gateway", "channels", "nodes"],
+      "entry_point": "architecture/GATEWAY_PROTOCOL.ctx.md"
+    },
+    "SANDBOX": {
+      "purpose": "Sandboxing backends (Docker/SSH/OpenShell), modes, scope, tool policy, elevated mode",
+      "affects": ["agents", "plugins", "nodes"],
+      "entry_point": "architecture/SANDBOX.ctx.md"
+    }
+  },
+  "services": {
+    "config_file": {
+      "path": "~/.openclaw/config.json",
+      "type": "json5-file",
+      "used_by": ["config"]
+    },
+    "secrets_file": {
+      "path": "~/.openclaw/store.secret",
+      "type": "encrypted-file",
+      "used_by": ["secrets"]
+    },
+    "sessions_dir": {
+      "path": "~/.openclaw/sessions/",
+      "type": "jsonl-files",
+      "used_by": ["sessions", "agents"]
+    },
+    "lmstudio_server": {
+      "url": "http://localhost:1234",
+      "type": "openai-compatible-rest",
+      "used_by": ["lmstudio"],
+      "endpoints": [
+        "GET /v1/models",
+        "POST /v1/chat/completions",
+        "POST /v1/embeddings"
+      ],
+      "note": "Local LM Studio inference server — must be running separately"
+    }
+  },
+  "lib_refs": {
+    "lmstudio": {
+      "purpose": "LM Studio local inference server — REST API, TypeScript/Python SDKs, CLI",
+      "entry_point": "lmstudio/INDEX.md",
+      "cross_index": "lmstudio/CROSS_INDEX.json",
+      "used_by": ["lmstudio"],
+      "endpoints_used": [
+        "GET /api/v1/models (health check)",
+        "POST /v1/chat/completions (inference)",
+        "POST /v1/embeddings (memory plugins)"
+      ],
+      "docs": [
+        "lmstudio/overview.ctx.md",
+        "lmstudio/typescript.ctx.md",
+        "lmstudio/python.ctx.md",
+        "lmstudio/rest-api.ctx.md",
+        "lmstudio/openai-compat.ctx.md",
+        "lmstudio/cli.ctx.md"
+      ]
+    }
+  },
+  "plugin_boundary": {
+    "rule": "Extensions in extensions/* import ONLY openclaw/plugin-sdk/* — never src/**",
+    "sdk_package": "packages/plugin-sdk",
+    "enforcement": "pnpm check-additional (architecture gate in CI)"
+  },
+  "invariants": [
+    "Extensions import only openclaw/plugin-sdk/* — never src/**",
+    "Config mutations are atomic via mutateConfigFile()",
+    "Session key = <channelId>/<peerId> — encodes routing",
+    "Gateway protocol changes require versioning",
+    "Secrets stored as SecretRef — never plain values",
+    "Transcript is append-only JSONL",
+    "Local provider health check runs once per session — result cached, never per-request",
+    "Model refs carry scheme prefix (lmstudio:, anthropic:, openai:) — bare names rejected"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "_comment": "Machine-readable dependency graph. One entry per module. Keep in sync with modules/*.ctx.md frontmatter.",
+  "modules": {
+    "example": {
+      "depends_on": ["database", "cache"],
+      "depended_by": ["api"],
+      "provides": ["ExampleService", "ExampleRepository"],
+      "entry_point": "modules/example.ctx.md"
+    }
+  },
+  "services": {
+    "database": {
+      "port": 5432,
+      "type": "relational",
+      "used_by": ["example"]
+    },
+    "cache": {
+      "port": 6379,
+      "type": "key-value",
+      "used_by": ["example"]
+    }
+  },
+  "invariants": [
+    "Replace this with your project-wide invariants",
+    "e.g. No direct DB access outside repository layer",
+    "e.g. All external calls through API gateway"
+  ]
+}

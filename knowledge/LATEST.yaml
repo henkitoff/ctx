@@ -1,0 +1,32 @@
+# Knowledge Distillate — LATEST
+#
+# Agents read THIS file at the start of every session.
+# Update it after each significant session.
+#
+# To create a new distillate:
+#   python scripts/new_knowledge.py "Short topic description"
+# This pre-fills date + topic, archives the previous LATEST automatically.
+
+_state: initial
+_note: >
+  Replace this file with your first real session distillate.
+  Run: python scripts/new_knowledge.py "Initial project setup"
+
+date: null
+topic: null
+milestone: null
+
+blockers_resolved: []
+
+cross_session_patterns: []
+
+next_session_hints:
+  - "Read INDEX.md to orient yourself"
+  - "Read CROSS_INDEX.json for the dependency graph"
+  - "Check modules/ for the relevant module doc"
+
+open_items: []
+
+units_completed: []
+
+metrics: {}
