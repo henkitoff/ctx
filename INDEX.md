@@ -1,3 +1,5 @@
+🇬🇧 English · [🇩🇪 Deutsch](INDEX.de.md)
+
 # Project Index — Agent Entry Point
 
 > **Every agent starts here.** This file routes to the right context

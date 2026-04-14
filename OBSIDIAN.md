@@ -1,3 +1,5 @@
+🇬🇧 English · [🇩🇪 Deutsch](OBSIDIAN.de.md)
+
 # Obsidian Setup — Humans and Agents, One Vault
 
 This `.ctx` repo is designed so the **same files serve two audiences equally**:

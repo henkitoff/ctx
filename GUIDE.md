@@ -1,268 +1,270 @@
-# .ctx — Vollständiger Setup- und Nutzungsguide
+🇬🇧 English · [🇩🇪 Deutsch](GUIDE.de.md)
+
+# .ctx — Complete Setup and Usage Guide
 
 ---
 
-## Warum .ctx + Distillation? Der echte Vorteil
+## Why .ctx + Distillation? The Real Advantage
 
-Ohne `.ctx` macht jeder Agent bei null an — er liest entweder zu wenig (halluziniert)
-oder zu viel (kostet Unsummen). Mit `.ctx` hat jedes Modell genau die Information,
-die es für seine Aufgabe braucht. Nicht mehr. Nicht weniger.
+Without `.ctx`, every agent starts from zero — it either reads too little (hallucinates)
+or too much (costs a fortune). With `.ctx`, every model has exactly the information
+it needs for its task. No more. No less.
 
-### Das Kernproblem ohne .ctx
+### The Core Problem Without .ctx
 
-Ein Agent der auf einem 300-Datei-Projekt arbeitet:
-- Liest 10 zufällige Dateien und halluziniert den Rest
-- Oder du schreibst den Kontext von Hand in jeden Prompt — jedes Mal
-- Bei einem Modellwechsel (Haiku statt Sonnet) weißt du nicht, was safe ist zu kürzen
-- Session-Ende = alles vergessen. Nächster Agent fängt von vorne an
-- Zwei parallele Agents blockieren sich, weil keiner weiß, was der andere gerade anfasst
+An agent working on a 300-file project:
+- Reads 10 random files and hallucinates the rest
+- Or you write the context by hand into every prompt — every single time
+- When switching models (Haiku instead of Sonnet) you don't know what is safe to cut
+- Session ends = everything forgotten. The next agent starts from scratch
+- Two parallel agents block each other because neither knows what the other is currently touching
 
-### Was .ctx konkret löst
+### What .ctx Concretely Solves
 
-| Situation | Ohne .ctx | Mit .ctx |
-|-----------|-----------|----------|
-| Agent dispatchen auf Modul X | Prompt von Hand schreiben | `LIES: .ctx/.distilled/haiku/X.ctx.md` |
-| Haiku auf komplexem Code | Halluziniert Dependencies | Bekommt nur Signaturen + Invarianten |
-| Sonnet auf Architektur-Task | Liest 40 Dateien, kostet $$ | Bekommt 1 Distillate mit vollem API |
-| Opus auf tiefer Analyse | Nimmt sich alles, überschreitet Context | Bekommt exakt das richtige Tier |
-| Session wechselt (anderer Tag) | Neuer Agent kennt nichts | `knowledge/LATEST.yaml` trägt die Learnings |
-| 2 parallele Agents | Gegenseitige Überraschungen | Jeder hat seinen Modul-Scope klar |
-| Neue Invariante entdeckt | Nirgends festgehalten | In .ctx.md + in Distillate — persistent |
+| Situation | Without .ctx | With .ctx |
+|-----------|-------------|----------|
+| Dispatch agent to module X | Write prompt by hand | `READ: .ctx/.distilled/haiku/X.ctx.md` |
+| Haiku on complex code | Hallucinates dependencies | Gets only signatures + invariants |
+| Sonnet on architecture task | Reads 40 files, costs $$ | Gets 1 distillate with full API |
+| Opus on deep analysis | Takes everything, exceeds context | Gets exactly the right tier |
+| Session switches (another day) | New agent knows nothing | `knowledge/LATEST.yaml` carries the learnings |
+| 2 parallel agents | Mutual surprises | Each has their module scope clearly defined |
+| New invariant discovered | Recorded nowhere | In .ctx.md + in distillate — persistent |
 
-### Gemessene Zahlen (Trade2, Produktionsprojekt)
+### Measured Numbers (production project)
 
 ```
-313 Python-Quelldateien
-451 .ctx.md-Dateien (inkl. externe Libs)
+313 Python source files
+451 .ctx.md files (incl. external libs)
 
-→ distilled auf 31 Dateien pro Tier:
-  haiku:  ~34k Tokens  → Haiku sieht das GESAMTE System
-  sonnet: ~49k Tokens  → Sonnet sieht Full API + Patterns
-  opus:   ~89k Tokens  → Opus sieht alles inkl. Rationale
+→ distilled to 31 files per tier:
+  haiku:  ~34k tokens  → Haiku sees the ENTIRE system
+  sonnet: ~49k tokens  → Sonnet sees full API + patterns
+  opus:   ~89k tokens  → Opus sees everything incl. rationale
 
-Kompression: 451 Dateien → 31 Distillate = 14:1
+Compression: 451 files → 31 distillates = 14:1
 ```
 
-Ein Haiku-Agent bekommt mit 34k Tokens ein vollständiges Bild des gesamten Systems.
-Ohne Distillation würde das gleiche Wissen ~300k Tokens kosten — oder 90% wären
-einfach nicht drin.
+A Haiku agent receives a complete picture of the entire system with 34k tokens.
+Without distillation, the same knowledge would cost ~300k tokens — or 90% simply
+would not be included.
 
 ---
 
-## KRITISCH: Was fehlt, bevor das System wirklich funktioniert
+## CRITICAL: What Is Missing Before the System Actually Works
 
-Das Template ist ein Skelett. Auf einem neuen Projekt fehlen **fünf Dinge**,
-ohne die Agents systematisch schlechte Ergebnisse liefern:
+The template is a skeleton. On a new project, **five things** are missing
+without which agents will systematically deliver poor results:
 
-### 1. KRITISCH — INDEX.md auf dein Projekt zeigt
+### 1. CRITICAL — INDEX.md Points to Your Project
 
-Die `INDEX.md` ist das erste, was jeder Agent liest. Wenn sie noch Template-Inhalte
-hat, navigiert der Agent ins Leere.
+`INDEX.md` is the first thing every agent reads. If it still contains template
+content, the agent navigates into a void.
 
-**Was fehlt:** Die Modul-Tabelle muss deine echten Pakete zeigen, die Critical
-Invariants müssen deine echten Grenzen beschreiben, die Tier-Regeln müssen zu
-deiner Modell-Auswahl passen.
+**What is missing:** The module table must show your real packages, the Critical
+Invariants must describe your real boundaries, the tier rules must match your
+model selection.
 
-### 2. KRITISCH — CROSS_INDEX.json bildet echte Dependencies ab
+### 2. CRITICAL — CROSS_INDEX.json Maps Real Dependencies
 
-Das ist die Maschinen-lesbare Dependency-Map. Wenn sie falsch ist, schickt jeder
-Dispatch den Agent in die falsche Richtung.
+This is the machine-readable dependency map. If it is wrong, every dispatch
+sends the agent in the wrong direction.
 
-**Was fehlt:** Jedes Modul mit seinen echten `depends_on` / `depended_by` / `provides`.
-Kein Raten — direkt aus `import`-Statements ableiten.
+**What is missing:** Every module with its real `depends_on` / `depended_by` / `provides`.
+No guessing — derive directly from `import` statements.
 
-### 3. KRITISCH — Modul .ctx.md existiert für jeden echten Package
+### 3. CRITICAL — Module .ctx.md Exists for Every Real Package
 
-Ohne `.ctx.md` pro Paket gibt es keine Distillation, keine Tier-Filterung, kein
-`LIES ZUERST` für Agents. Das Paket ist eine Blackbox.
+Without a `.ctx.md` per package there is no distillation, no tier filtering, no
+`READ FIRST` for agents. The package is a black box.
 
-**Was fehlt:** Mindestens `## Purpose`, `## Public API`, `## Invariants` für jedes
-Package das ein Agent anfassen wird. Ohne diese drei Sections ist ein Dispatch auf
-das Modul schlechter als kein Dispatch.
+**What is missing:** At minimum `## Purpose`, `## Public API`, `## Invariants` for every
+package an agent will touch. Without these three sections, a dispatch to the module
+is worse than no dispatch at all.
 
-### 4. KRITISCH — CLAUDE.md (oder AGENTS.md) enthält die Dispatch-Regel
+### 4. CRITICAL — CLAUDE.md (or AGENTS.md) Contains the Dispatch Rule
 
-Ohne diese Regel weißt du als Claude/Copilot nicht, dass `.ctx` existiert. Jeder
-Agent startet blind.
+Without this rule, Claude/Copilot does not know that `.ctx` exists. Every
+agent starts blind.
 
-**Was fehlt:** Die Dispatch-Regel muss in `CLAUDE.md` deines Projekts stehen,
-nicht nur in diesem Template.
+**What is missing:** The dispatch rule must be in your project's `CLAUDE.md`,
+not only in this template.
 
-### 5. MITTEL — Distilled wurden nach jeder .ctx-Änderung neu gebaut
+### 5. MEDIUM — Distillates Were Rebuilt After Every .ctx Change
 
-Veraltete Distillate sind schlimmer als keine Distillate — ein Agent der
-`src/payments/processor.py` geändert hat, arbeitet gegen Distillate die noch den
-alten Stand zeigen.
+Outdated distillates are worse than no distillates — an agent that has changed
+`src/payments/processor.py` is working against distillates that still show the
+old state.
 
-**Was fehlt:** Entweder ein pre-commit-Hook oder die Disziplin, nach jeder
-`.ctx.md`-Änderung `build_distilled.py` zu laufen.
+**What is missing:** Either a pre-commit hook or the discipline to run
+`build_distilled.py` after every `.ctx.md` change.
 
 ---
 
-## Anleitung: Erstmalige Einrichtung auf einem neuen Projekt
+## Guide: Initial Setup on a New Project
 
-### Phase 1 — Struktur aufsetzen (einmalig, ~30 Min)
+### Phase 1 — Set Up Structure (once, ~30 min)
 
 ```bash
-# 1. Repo als .ctx/ in dein Projekt kopieren
-cp -r ctx-repo/ /dein/projekt/.ctx/
+# 1. Copy repo as .ctx/ into your project
+cp -r ctx-repo/ /your/project/.ctx/
 
-# 2. Template-Beispieldateien löschen
+# 2. Delete template example files
 rm .ctx/modules/example.ctx.md
 rm .ctx/architecture/example_pattern.ctx.md
 
-# 3. Verzeichnisse anlegen
+# 3. Create directories
 mkdir -p .ctx/modules
 mkdir -p .ctx/architecture
 mkdir -p .ctx/knowledge/archive
 ```
 
-### Phase 2 — INDEX.md auf dein Projekt anpassen (einmalig, ~20 Min)
+### Phase 2 — Adapt INDEX.md to Your Project (once, ~20 min)
 
-`.ctx/INDEX.md` ist die einzige Datei, die jeder Agent immer liest.
-Mach sie präzise.
+`.ctx/INDEX.md` is the only file every agent always reads.
+Make it precise.
 
 ```markdown
-# MeinProjekt — Agent Entry Point
+# MyProject — Agent Entry Point
 
-> Kurzbeschreibung: Was macht das Projekt? (1-2 Sätze)
+> Brief description: What does the project do? (1-2 sentences)
 
 ## Quick Navigation
 
-| Aufgabe | Lies zuerst |
-|---------|------------|
-| Verstehe Datenfluss | modules/pipeline.ctx.md |
-| Ändere API | modules/api.ctx.md |
-| Ändere Datenbank | modules/infra.ctx.md |
+| Task | Read first |
+|------|-----------|
+| Understand data flow | modules/pipeline.ctx.md |
+| Change API | modules/api.ctx.md |
+| Change database | modules/infra.ctx.md |
 
 ## Tier Selection
 
-| Modell | Lies aus |
-|--------|---------|
+| Model | Read from |
+|-------|----------|
 | Haiku | .ctx/.distilled/haiku/ |
 | Sonnet | .ctx/.distilled/sonnet/ |
 | Opus | .ctx/.distilled/opus/ + modules/ |
 
 ## Critical Invariants
 
-1. Nur deine echte #1 Invariante
-2. Nur deine echte #2 Invariante
+1. Only your real #1 invariant
+2. Only your real #2 invariant
 ...
 ```
 
-**Keine Platzhalter.** Wenn du eine Invariante nicht kennst, lass sie weg.
-Falsche Invarianten sind aktiv schädlich.
+**No placeholders.** If you don't know an invariant, leave it out.
+Wrong invariants are actively harmful.
 
-### Phase 3 — CROSS_INDEX.json aus echten Imports ableiten (einmalig, ~15–45 Min)
+### Phase 3 — Derive CROSS_INDEX.json from Real Imports (once, ~15–45 min)
 
-**Python-Projekte: automatisch via `ctx_scan.py`**
+**Python projects: automatically via `ctx_scan.py`**
 
 ```bash
-# 1. CTX_CONFIG.yaml anpassen (Source-Dir und Pakete)
+# 1. Adapt CTX_CONFIG.yaml (source dir and packages)
 cp CTX_CONFIG.yaml .ctx/CTX_CONFIG.yaml
-# → source_dir und internal_packages eintragen
+# → enter source_dir and internal_packages
 
-# 2. Scan laufen — erzeugt CROSS_INDEX.json + CTX_IR.jsonl + ANOMALIES.json
+# 2. Run scan — generates CROSS_INDEX.json + CTX_IR.jsonl + ANOMALIES.json
 python scripts/ctx_scan.py
 ```
 
-**Andere Sprachen: manuell**
+**Other languages: manually**
 
 ```bash
-# Imports analysieren (Beispiel für JS/TS)
+# Analyze imports (example for JS/TS)
 grep -r "^import\|^require" src/ | grep -v node_modules | \
   sort | uniq -c | sort -rn | head -50
 ```
 
-Dann CROSS_INDEX.json befüllen:
+Then populate CROSS_INDEX.json:
 
 ```json
 {
   "modules": {
-    "mein_paket": {
+    "my_package": {
       "depends_on": ["infra", "common"],
       "depended_by": ["api", "workers"],
-      "provides": ["MeineKlasse", "meine_funktion"],
-      "entry_point": "modules/mein_paket.ctx.md"
+      "provides": ["MyClass", "my_function"],
+      "entry_point": "modules/my_package.ctx.md"
     }
   }
 }
 ```
 
-**Regel:** `provides` = öffentliche API die andere Module nutzen.
-`depends_on` = direkte Imports (keine transitiven).
+**Rule:** `provides` = public API that other modules use.
+`depends_on` = direct imports (no transitives).
 
-### Phase 4 — Pro Paket ein .ctx.md erstellen (Hauptarbeit, ~1–2 Min/Paket)
+### Phase 4 — Create One .ctx.md Per Package (main work, ~1–2 min/package)
 
-Priorität: Pakete die Agents am häufigsten anfassen. Fang mit den stabilen Kern-Paketen an.
+Priority: packages that agents touch most often. Start with the stable core packages.
 
-Mindest-Template für ein neues Modul:
+Minimum template for a new module:
 
 ```markdown
 ---
-module: modules/mein_paket
+module: modules/my_package
 type: codebase
 depends_on: [infra, common]
 depended_by: [api, workers]
-provides: [MeineKlasse, meine_funktion]
+provides: [MyClass, my_function]
 invariants:
-  - "Invariante 1 — nie verletzen"
-  - "Invariante 2 — nie verletzen"
-keywords: [relevante, begriffe]
+  - "Invariant 1 — never violate"
+  - "Invariant 2 — never violate"
+keywords: [relevant, terms]
 
 tags: [ctx/module]
 ---
 
 ## Purpose  <!-- all-tiers -->
 
-Was macht dieses Paket? Für wen? Warum existiert es?
+What does this package do? For whom? Why does it exist?
 
 ## Public API  <!-- all-tiers -->
 
-| Export | Typ | Zweck |
-|--------|-----|-------|
-| `MeineKlasse` | class | ... |
-| `meine_funktion` | fn | ... |
+| Export | Type | Purpose |
+|--------|------|---------|
+| `MyClass` | class | ... |
+| `my_function` | fn | ... |
 
 ## Invariants  <!-- all-tiers -->
 
-1. Invariante 1 — Begründung
-2. Invariante 2 — Begründung
+1. Invariant 1 — rationale
+2. Invariant 2 — rationale
 
 ## Key Patterns  <!-- sonnet+ -->
 
-Wie wird das Paket typischerweise genutzt? Code-Beispiel.
+How is the package typically used? Code example.
 
 ## Design Rationale  <!-- opus-only -->
 
-Warum wurde es so designt? Was wurde verworfen?
+Why was it designed this way? What was discarded?
 
 ## Cross-References  <!-- all-tiers -->
 
-- [[modules/infra.ctx|infra]] — warum diese Dependency
-- [[modules/common.ctx|common]] — warum diese Dependency
+- [[modules/infra.ctx|infra]] — why this dependency
+- [[modules/common.ctx|common]] — why this dependency
 ```
 
-**Tier-Tags sind Pflicht.** Jede Section muss `<!-- all-tiers -->`,
-`<!-- sonnet+ -->` oder `<!-- opus-only -->` haben — sonst erscheint sie
-in allen Tiers oder gar nicht.
+**Tier tags are mandatory.** Every section must have `<!-- all-tiers -->`,
+`<!-- sonnet+ -->`, or `<!-- opus-only -->` — otherwise it appears in
+all tiers or not at all.
 
-### Phase 5 — Distillation bauen und prüfen (einmalig + nach jeder Änderung)
+### Phase 5 — Build and Verify Distillation (once + after every change)
 
 ```bash
-# Manuell nach Änderungen:
+# Manually after changes:
 python scripts/build_distilled.py
 
-# Python-Projekte: alles in einem Schritt (Scan + Frontmatter-Update + Distillation)
+# Python projects: everything in one step (scan + frontmatter update + distillation)
 python scripts/ctx_autoregen.py
 
-# Konsistenz prüfen (bidirectionality + CROSS_INDEX alignment):
+# Check consistency (bidirectionality + CROSS_INDEX alignment):
 python scripts/ctx_validate.py
 
-# Prüfen: Macht das Haiku-Distillate Sinn?
-cat .ctx/.distilled/haiku/mein_paket.ctx.md
+# Check: does the Haiku distillate make sense?
+cat .ctx/.distilled/haiku/my_package.ctx.md
 
-# Token-Überblick
+# Token overview
 python -c "
 import json
 m = json.load(open('.ctx/.distilled/MANIFEST.json'))
@@ -271,137 +273,136 @@ for tier, data in m['tiers'].items():
 "
 ```
 
-**Zielgrößen:**
-- Haiku-Tier: < 40k Tokens gesamt (Haiku-Kontextfenster nutzen ohne zu verschwenden)
-- Sonnet-Tier: < 80k Tokens gesamt
-- Opus-Tier: Kein hartes Limit, aber > 200k ist ein Zeichen für Redundanz
+**Target sizes:**
+- Haiku tier: < 40k tokens total (use Haiku context window without wasting it)
+- Sonnet tier: < 80k tokens total
+- Opus tier: No hard limit, but > 200k is a sign of redundancy
 
-### Phase 6 — Dispatch-Regel in CLAUDE.md eintragen (einmalig, 5 Min)
+### Phase 6 — Add Dispatch Rule to CLAUDE.md (once, 5 min)
 
-In dein `CLAUDE.md` / `AGENTS.md` einfügen:
+Add to your `CLAUDE.md` / `AGENTS.md`:
 
 ```markdown
-## Kontext-Distillation (Pflicht für ALLE Agent-Dispatches)
+## Context Distillation (Required for ALL Agent Dispatches)
 
-Beim Dispatchen eines Sub-Agents:
-1. Bestimme welche Module der Agent bearbeitet
-2. Füge in den Prompt ein:
-   - Haiku: "LIES ZUERST: .ctx/.distilled/haiku/{modul}.ctx.md"
-   - Sonnet: "LIES ZUERST: .ctx/.distilled/sonnet/{modul}.ctx.md"
-   - Opus: "LIES ZUERST: .ctx/.distilled/opus/{modul}.ctx.md"
-3. Bei Architektur-Aufgaben zusätzlich relevante Architecture-Docs
+When dispatching a sub-agent:
+1. Determine which modules the agent will work on
+2. Add to the prompt:
+   - Haiku: "READ FIRST: .ctx/.distilled/haiku/{module}.ctx.md"
+   - Sonnet: "READ FIRST: .ctx/.distilled/sonnet/{module}.ctx.md"
+   - Opus: "READ FIRST: .ctx/.distilled/opus/{module}.ctx.md"
+3. For architecture tasks, additionally include relevant architecture docs
 
-### Modul-Mapping
+### Module Mapping
 
-| Package | .ctx Datei |
-|---------|-----------|
-| mein_paket/ | mein_paket.ctx.md |
-| anderes_paket/ | anderes_paket.ctx.md |
+| Package | .ctx file |
+|---------|----------|
+| my_package/ | my_package.ctx.md |
+| other_package/ | other_package.ctx.md |
 ```
 
 ---
 
-## Anleitung: Kontinuierliche Nutzung
+## Guide: Ongoing Usage
 
-Nach der Ersteinrichtung gibt es **drei Trigger** für .ctx-Arbeit:
+After the initial setup there are **three triggers** for .ctx work:
 
-### Trigger 1 — Du änderst öffentliche API eines Pakets
+### Trigger 1 — You Change the Public API of a Package
 
 ```
-Geänderte Datei → .ctx.md des Pakets updaten → build_distilled.py laufen
+Changed file → update .ctx.md of the package → run build_distilled.py
 ```
 
-Konkret: Wenn du eine neue Funktion in `src/api/users.py` hinzufügst, die andere
-Module nutzen werden:
-1. `modules/api.ctx.md` — Public API-Tabelle updaten
-2. `CROSS_INDEX.json` — falls neue `provides`
+Concretely: if you add a new function to `src/api/users.py` that other
+modules will use:
+1. `modules/api.ctx.md` — update Public API table
+2. `CROSS_INDEX.json` — if there are new `provides`
 3. `python scripts/build_distilled.py`
 
-**Faustregel:** `## Public API` und `## Invariants` müssen immer aktuell sein.
-`## Design Rationale` darf veralten — es ist historisch.
+**Rule of thumb:** `## Public API` and `## Invariants` must always be up to date.
+`## Design Rationale` may go stale — it is historical.
 
-### Trigger 2 — Du entdeckst eine neue Invariante oder eine bricht
+### Trigger 2 — You Discover a New Invariant or One Breaks
 
-Das ist der wichtigste Moment. Invarianten in `.ctx.md` sind der einzige Weg,
-wie zukünftige Agents von vergangenen Fehlern lernen.
+This is the most important moment. Invariants in `.ctx.md` are the only way
+future agents can learn from past mistakes.
 
 ```markdown
 ## Invariants  <!-- all-tiers -->
 
-1. Feature-Spaltennamen nur via contract.yaml ändern — nie direkt in Code
-   (Invariante 3 verletzt → 4h Debugging, 2024-03-15)
-2. Neue Invariante: ...
+1. Change feature column names only via contract.yaml — never directly in code
+   (Invariant 3 violated → 4h debugging, 2024-03-15)
+2. New invariant: ...
 ```
 
-Nach dem Eintragen: `build_distilled.py` laufen, damit die Invariante im
-Haiku-Tier (dem wichtigsten für Agents) landet.
+After entering it: run `build_distilled.py` so the invariant lands in the
+Haiku tier (the most important one for agents).
 
-### Trigger 3 — Session-Ende / Handoff an anderen Agent
+### Trigger 3 — Session End / Handoff to Another Agent
 
 ```bash
-python scripts/new_knowledge.py "Was der nächste Agent angehen soll"
+python scripts/new_knowledge.py "What the next agent should tackle"
 ```
 
-Das legt `.ctx/knowledge/LATEST.yaml` an. Was da rein muss:
+This creates `.ctx/knowledge/LATEST.yaml`. What must go in there:
 
 ```yaml
-milestone: "Was jetzt wahr ist, was vorher nicht wahr war"
+milestone: "What is now true that was not true before"
 
 cross_session_patterns:
-  - discovery: "Nicht-offensichtliche Erkenntnis"
-    applies_to: [modul_a, modul_b]
-    # Wenn sich zwei Module gegenseitig importieren -> Deadlock. Immer via Bus.
+  - discovery: "Non-obvious insight"
+    applies_to: [module_a, module_b]
+    # If two modules import each other -> deadlock. Always via bus.
 
 next_session_hints:
   - priority: 1
-    task: "Was als nächstes getan werden muss"
-    context: ".ctx/.distilled/sonnet/relevantes_modul.ctx.md"
+    task: "What needs to be done next"
+    context: ".ctx/.distilled/sonnet/relevant_module.ctx.md"
 
 open_items:
-  - item: "Bewusst aufgeschoben"
-    why_deferred: "Konkreter Grund"
-    trigger: "Wann wieder aufgreifen"
+  - item: "Deliberately deferred"
+    why_deferred: "Concrete reason"
+    trigger: "When to pick up again"
 ```
 
-**Was NICHT rein soll:** Welche Dateien geändert wurden (git log), wie eine
-Funktion funktioniert (Code lesen), was heute gemacht wurde (git blame).
+**What should NOT go in there:** Which files were changed (git log), how a
+function works (read the code), what was done today (git blame).
 
 ---
 
-## Cross-Referenzen aufbauen — das unterschätzte Feature
+## Building Cross-References — The Underestimated Feature
 
-Cross-Referenzen in `.ctx.md` sind keine Dekoration. Sie sind die einzige
-Möglichkeit, wie ein Agent weiß, **wohin er als nächstes schauen muss**,
-ohne alle Dateien zu lesen.
+Cross-references in `.ctx.md` are not decoration. They are the only
+way an agent knows **where to look next** without reading all files.
 
-### Schlechte Cross-Referenz (nutzlos)
+### Bad Cross-Reference (useless)
 
 ```markdown
 ## Cross-References
-- infra/ — Infrastruktur
+- infra/ — Infrastructure
 - common/ — Utilities
 ```
 
-### Gute Cross-Referenz (nützlich)
+### Good Cross-Reference (useful)
 
 ```markdown
 ## Cross-References  <!-- all-tiers -->
 
-- [[modules/db.ctx|db]] — Datenbankverbindung, die api/ nutzt für Queries
-- [[modules/auth.ctx|auth]] — JWT-Validation muss vor jedem API-Handler laufen
-- [[modules/workers.ctx|workers]] — Async-Jobs werden über workers/ dispatcht, nie direkt
-- [[architecture/API_CONTRACT.ctx|API_CONTRACT]] — warum Payload-Schema nur via schema.py änderbar
+- [[modules/db.ctx|db]] — database connection that api/ uses for queries
+- [[modules/auth.ctx|auth]] — JWT validation must run before every API handler
+- [[modules/workers.ctx|workers]] — async jobs are dispatched via workers/, never directly
+- [[architecture/API_CONTRACT.ctx|API_CONTRACT]] — why payload schema is only changeable via schema.py
 ```
 
-**Regel:** Jede Cross-Referenz braucht ein "warum" — sonst ist sie nutzlos.
-Ein Agent der weiß "features hängt von signals ab — weil Feature-Output über den
-Bus geht, nicht direkt" kann korrekte Entscheidungen treffen. Einer der nur weiß
-"features hängt von signals ab" nicht.
+**Rule:** Every cross-reference needs a "why" — otherwise it is useless.
+An agent that knows "features depends on signals — because feature output goes over
+the bus, not directly" can make correct decisions. One that only knows
+"features depends on signals" cannot.
 
-### CROSS_INDEX.json korrekt halten
+### Keeping CROSS_INDEX.json Correct
 
 ```bash
-# Prüfen ob CROSS_INDEX.json vollständig ist
+# Check whether CROSS_INDEX.json is complete
 python -c "
 import json
 with open('.ctx/CROSS_INDEX.json') as f:
@@ -410,65 +411,65 @@ modules = set(ci['modules'].keys())
 for name, data in ci['modules'].items():
     for dep in data.get('depends_on', []):
         if dep not in modules:
-            print(f'FEHLT: {name}.depends_on enthält {dep}, aber {dep} hat kein Modul-Eintrag')
+            print(f'MISSING: {name}.depends_on contains {dep}, but {dep} has no module entry')
 "
 ```
 
 ---
 
-## Checkliste: Vollständige Funktionsfähigkeit
+## Checklist: Full Operational Readiness
 
-### Ersteinrichtung abgeschlossen wenn:
-
-```
-[ ] .ctx/ liegt im Projekt-Root (nicht irgendwo anders)
-[ ] INDEX.md zeigt echte Module, keine Template-Platzhalter
-[ ] CROSS_INDEX.json hat alle Pakete mit echten depends_on/provides
-[ ] Jedes Paket das Agents anfassen werden hat ein .ctx.md
-[ ] Jedes .ctx.md hat Tier-Tags (<!-- all-tiers -->, <!-- sonnet+ -->, etc.)
-[ ] Jedes .ctx.md hat mindestens: Purpose, Public API, Invariants
-[ ] build_distilled.py läuft ohne Fehler durch
-[ ] Haiku-Distillate sehen sinnvoll aus (nicht leer, nicht zu groß)
-[ ] Dispatch-Regel steht in CLAUDE.md / AGENTS.md des Projekts
-[ ] Ein Test-Dispatch auf ein Modul wurde gemacht und Agent hatte richtigen Kontext
-```
-
-### Kontinuierliche Nutzung gesund wenn:
+### Initial Setup Complete When:
 
 ```
-[ ] build_distilled.py läuft nach jeder .ctx.md-Änderung
-[ ] Neue Invarianten werden sofort in .ctx.md eingetragen (nicht "später")
-[ ] Session-Ende: knowledge/LATEST.yaml ist aktuell
-[ ] Public API Änderungen → .ctx.md Public API Tabelle sofort geupdatet
-[ ] CROSS_INDEX.json spiegelt echte Dependencies (kein Drift)
-[ ] Distillate sind nie älter als die Quelle (MANIFEST.json Timestamp prüfen)
+[ ] .ctx/ is in the project root (not somewhere else)
+[ ] INDEX.md shows real modules, no template placeholders
+[ ] CROSS_INDEX.json has all packages with real depends_on/provides
+[ ] Every package that agents will touch has a .ctx.md
+[ ] Every .ctx.md has tier tags (<!-- all-tiers -->, <!-- sonnet+ -->, etc.)
+[ ] Every .ctx.md has at minimum: Purpose, Public API, Invariants
+[ ] build_distilled.py runs through without errors
+[ ] Haiku distillates look sensible (not empty, not too large)
+[ ] Dispatch rule is in CLAUDE.md / AGENTS.md of the project
+[ ] A test dispatch to a module was done and the agent had the right context
+```
+
+### Ongoing Usage Healthy When:
+
+```
+[ ] build_distilled.py runs after every .ctx.md change
+[ ] New invariants are entered into .ctx.md immediately (not "later")
+[ ] Session end: knowledge/LATEST.yaml is up to date
+[ ] Public API changes → .ctx.md Public API table updated immediately
+[ ] CROSS_INDEX.json reflects real dependencies (no drift)
+[ ] Distillates are never older than the source (check MANIFEST.json timestamp)
 ```
 
 ---
 
-## Häufige Fehler
+## Common Mistakes
 
-### Fehler 1 — .ctx.md ohne Tier-Tags
+### Mistake 1 — .ctx.md Without Tier Tags
 
 ```markdown
 ## Design Rationale
-Warum dieses Design...
+Why this design...
 ```
 
-**Problem:** Section erscheint in allen Tiers. Haiku bekommt Design-Rationale
-die es nicht braucht und bezahlt dafür in Tokens.
+**Problem:** Section appears in all tiers. Haiku receives Design Rationale
+it does not need and pays for it in tokens.
 
-**Fix:** Immer taggsen:
+**Fix:** Always tag:
 ```markdown
 ## Design Rationale  <!-- opus-only -->
 ```
 
-### Fehler 2 — Distillate nicht nach Änderung neu gebaut
+### Mistake 2 — Distillates Not Rebuilt After Changes
 
-**Problem:** Agent liest `.ctx/.distilled/haiku/features.ctx.md` und sieht
-einen Monat alten Stand. Arbeitet gegen veraltete Invarianten.
+**Problem:** Agent reads `.ctx/.distilled/haiku/features.ctx.md` and sees
+a month-old state. Works against outdated invariants.
 
-**Fix:** `build_distilled.py` in pre-commit-Hook oder als Makefile-Target.
+**Fix:** `build_distilled.py` in a pre-commit hook or as a Makefile target.
 
 ```bash
 # .git/hooks/pre-commit
@@ -477,27 +478,27 @@ cd .ctx && python scripts/build_distilled.py --quiet
 git add .ctx/.distilled/
 ```
 
-### Fehler 3 — CROSS_INDEX.json nie geupdatet
+### Mistake 3 — CROSS_INDEX.json Never Updated
 
-**Problem:** Ein neues Paket wird hinzugefügt, taucht nie in CROSS_INDEX.json
-auf. Agents wissen nicht, dass es existiert oder was es tut.
+**Problem:** A new package is added, never appears in CROSS_INDEX.json.
+Agents don't know it exists or what it does.
 
-**Fix:** CROSS_INDEX.json ist Teil des Definition-of-Done für jedes neue Paket.
+**Fix:** CROSS_INDEX.json is part of the Definition of Done for every new package.
 
-### Fehler 4 — knowledge/LATEST.yaml bleibt leer
+### Mistake 4 — knowledge/LATEST.yaml Stays Empty
 
-**Problem:** Nächste Session fängt von vorne an. Alle Learnings, Patterns,
-offenen Punkte sind weg.
+**Problem:** Next session starts from scratch. All learnings, patterns,
+open items are gone.
 
-**Fix:** `new_knowledge.py` läuft am Ende jeder signifikanten Session.
+**Fix:** `new_knowledge.py` runs at the end of every significant session.
 
-### Fehler 5 — Invarianten im .ctx.md veralten
+### Mistake 5 — Invariants in .ctx.md Go Stale
 
-**Problem:** Code hat sich geändert, Invariante gilt nicht mehr, steht aber
-noch im Distillate. Agent hält sich an eine falsche Invariante.
+**Problem:** Code has changed, invariant no longer applies, but still
+appears in the distillate. Agent follows a wrong invariant.
 
-**Fix:** Invarianten sind das erste, was beim Refactoring geprüft wird.
-Wenn eine Invariante bricht, muss sie sofort aus .ctx.md raus (oder angepasst).
+**Fix:** Invariants are the first thing checked during refactoring.
+If an invariant breaks, it must be removed from .ctx.md immediately (or updated).
 
 ---
 

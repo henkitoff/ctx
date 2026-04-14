@@ -1,3 +1,5 @@
+🇬🇧 English · [🇩🇪 Deutsch](AGENTS.de.md)
+
 # Agent Entry Point (Codex / GitHub Copilot)
 
 Start here. Read INDEX.md first, then follow the task table.

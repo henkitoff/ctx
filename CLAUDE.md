@@ -1,3 +1,5 @@
+🇬🇧 English · [🇩🇪 Deutsch](CLAUDE.de.md)
+
 # Agent Dispatch Rules
 
 > Copy the relevant section into your project's CLAUDE.md / AGENTS.md.
